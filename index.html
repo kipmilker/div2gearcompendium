@@ -212,6 +212,53 @@
     padding-bottom: 10px;
     border-bottom: 1px solid var(--line);
   }
+  .info-icon{
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 1px solid var(--text-faint);
+    color: var(--text-faint);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: help;
+    flex-shrink: 0;
+  }
+  .info-icon:hover, .info-icon:focus{
+    border-color: var(--amber);
+    color: var(--amber);
+    outline: none;
+  }
+  .info-icon .info-tooltip{
+    display: none;
+    position: absolute;
+    top: 26px;
+    left: 0;
+    width: 340px;
+    max-width: 80vw;
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.6;
+    white-space: pre-line;
+    text-transform: none;
+    letter-spacing: normal;
+    padding: 12px 14px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.5);
+    z-index: 100;
+    cursor: auto;
+  }
+  .info-icon:hover .info-tooltip,
+  .info-icon:focus .info-tooltip{
+    display: block;
+  }
   .section-title h2{
     font-family: 'Oswald', sans-serif;
     font-size: 20px;
@@ -575,6 +622,10 @@ function renderCard(sheet, row, image, q){
   return html;
 }
 
+const SHEET_HELP_TEXT = {
+  'Weapons': "* Includes -10% Reload Speed penalty from the large mag when applicable\nThis column exists to facilitate exotic damage comparisons\n\n** A sign next to the number represents the missing mod slot\n ! : Missing Muzzle\n # : Missing Underbarrel\n\n $ : Missing Magazine\n & : Missing Optics\n \\ : Has long rail"
+};
+
 function renderSheetSection(sheet, q, container, isPreview, limit){
   const matchedIdx = sheet.rows.map((r, i) => i).filter(i => rowMatches(sheet.rows[i], q));
   const idxToShow = isPreview ? matchedIdx.slice(0, limit) : matchedIdx;
@@ -583,8 +634,12 @@ function renderSheetSection(sheet, q, container, isPreview, limit){
   if(!isPreview){
     const titleRow = document.createElement('div');
     titleRow.className = 'section-title';
+    const helpText = SHEET_HELP_TEXT[sheet.name];
+    const helpHtml = helpText
+      ? '<span class="info-icon" tabindex="0">?<div class="info-tooltip">' + esc(helpText) + '</div></span>'
+      : '';
     titleRow.innerHTML = '<h2>' + esc(sheet.name) + '</h2><span class="result-count">' +
-      (q ? matchedIdx.length + ' of ' + sheet.rows.length + ' entries' : sheet.rows.length + ' entries') + '</span>';
+      (q ? matchedIdx.length + ' of ' + sheet.rows.length + ' entries' : sheet.rows.length + ' entries') + '</span>' + helpHtml;
     wrap.appendChild(titleRow);
   }
 
